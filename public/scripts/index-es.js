@@ -12,6 +12,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var timer = null;
+
 var PraiseButton = function () {
     function PraiseButton(num, element, url) {
         _classCallCheck(this, PraiseButton);
@@ -27,40 +29,33 @@ var PraiseButton = function () {
             var _this = this;
 
             this.element.click(function () {
-                if (_this.num < 10) {
-                    _this.element.css('-webkit-filter', 'grayscale(0)');
-                    $('#animation').addClass('num');
-                    _this.num = add(_this.num);
-                    setTimeout(function () {
-                        $('#animation').removeClass('num');
-                    }, 1000);
-                } else {
-                    _this.element.css('-webkit-filter', 'grayscale(1)');
-                    _this.num = 0;
-                }
-                console.log(_this.num);
-                // $.ajax({
-                //     url:this.url,
-                //     data:{
-                //         num:this.num
-                //     },
-                //     type:'get',
-                //     success:function(data){
-                //         console.log(data);
-                //     },
-                //     error:function(){
-                //         console.log("请求失败！");
-                //     }
-                // });
-                axios.get(_this.url, {
-                    params: {
-                        num: _this.num
+
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    if (_this.num < 10) {
+                        $('#animation').addClass('num');
+                        _this.element.css('webkit-filter', "grayscale(0)");
+                        _this.num = add(_this.num);
+                        console.log(_this.num);
+                        setTimeout(function () {
+                            $('#animation').removeClass('num');
+                        }, 1000);
+                        axios.get(_this.url).then(function (response) {
+                            console.log(response);
+                            var result = response.data.data;
+                            if (result) {
+                                console.log('点赞成功');
+                            } else {
+                                console.log('点赞失败');
+                            }
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                    } else {
+                        _this.num = 0;
+                        _this.element.css('webkit-filter', "grayscale(1)");
                     }
-                }).then(function (response) {
-                    console.log(response);
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                }, 1000);
             });
         }
     }]);
